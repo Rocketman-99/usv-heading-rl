@@ -1,0 +1,41 @@
+# --- MATLAB / Simulink ---
+*.asv
+*.autosave
+*.slxc
+*.mex*
+slprj/
+sccprj/
+codegen/
+*.slx.r*
+*.mdl.r*
+
+# Simulink 자동 백업 (모델 원본은 커밋, 백업은 제외)
+*.slx.autosave
+*.slx.bak
+
+# --- 학습 산출물 (대용량, 재생성 가능) ---
+# 체크포인트/에이전트/리플레이버퍼는 커밋하지 않는다.
+checkpoints/
+runs/
+logs/
+*.mat
+# 단, 소량의 요약 지표 mat 은 예외적으로 허용
+!results/**/summary_*.mat
+
+# --- 결과물 ---
+# results/ 에는 그래프와 요약 지표(csv/md/png)만 커밋한다.
+results/**/raw/
+*.csv.gz
+
+# --- Python 대안 검토용 (사용 시) ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# --- OS / 에디터 ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*~
