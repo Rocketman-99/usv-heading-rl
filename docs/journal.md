@@ -42,3 +42,9 @@ YYYY-MM-DD  무엇을 했고 무엇이 안 됐는지 한두 줄
 
             결론: 1단계 결과는 |δ| ≲ 1~2 deg 영역에서만 유효하다.
             이 한계를 숨기지 않고 `02_plant_model.md` 에 표로 남겼다.
+
+2026-08-07  MATLAB 환경 확인 (R2023b, win64). Simulink 는 있는데
+            **Reinforcement Learning Toolbox 가 설치·라이선스 모두 없음.**
+            Control/Deep Learning/Optimization/Statistics 는 라이선스는 있고 설치만 안 된 상태.
+            → 1단계 코드는 기본 MATLAB 기능만 쓰므로 플랜트 검증·베이스라인 튜닝은
+            그대로 진행 가능. 막히는 건 학습 루프 하나뿐이다. D-002b 로 분리해 기록.
