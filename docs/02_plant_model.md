@@ -34,13 +34,15 @@ T · ṙ + r = K · δ
 r(t) = K · δ₀ · (1 − e^(−t/T))
 ```
 
-구현: `src/plant/nomotoDerivative.m`, `src/sim/simulateHeading.m`
+구현: `src/usv_heading/plant.py`, `src/usv_heading/sim.py`
+검증: `tests/test_plant.py`, `tests/test_sim.py`
+실행: `python scripts/run_step_response_check.py`
 
 ---
 
 ## 2. 파라미터 세트
 
-`src/plant/nomotoParams.m` 에 세 세트가 등록되어 있다.
+`src/usv_heading/plant.py` 에 세 세트가 등록되어 있다.
 **어떤 세트를 이 프로젝트의 플랜트로 채택할지는 아직 결정되지 않았다** — `decisions.md` D-004 (OPEN).
 
 ### 2.1 `mariner` — Mariner 급 화물선 (현재 기본값)
@@ -123,7 +125,7 @@ Y_δ =  278e-5    N_δ = −139e-5
 신뢰할 수 있는가?" 에 대한 답의 일부다 — **1단계 결과는 선형 영역에서만 유효하며,
 그래서 2단계에서 3자유도 모델로 교체한다.**
 
-재현 방법: `src/scripts/run_step_response_check.m` (선형 검증 C1~C6).
+재현 방법: `python scripts/run_step_response_check.py` (선형 검증 C1~C6).
 비선형 대조는 MSS 저장소를 받아 `mssExamples/exKT.m` 를 참고한다.
 
 ---
@@ -179,7 +181,7 @@ T < 0 이므로 개루프 침로 불안정선이다. 1단계 대상이 아니다
 물리적으로 의미를 가지려면 구동기 한계가 필요하다. 없으면 학습이 무한대 타각률을
 쓰는 해를 찾아낼 수 있다.
 
-구현 (`nomotoDerivative.m`):
+구현 (`plant.py::nomoto_derivative`):
 
 ```
 δ̇ = sat( (δ_cmd − δ) / T_δ , ±δ̇_max )
@@ -192,7 +194,7 @@ T < 0 이므로 개루프 침로 불안정선이다. 1단계 대상이 아니다
 | δ̇_max | 5 deg/s | MSS `mariner.m` |
 | T_δ | 1.0 s | MSS `mariner.m` 은 T_δ = 1 s 에 해당하는 형태(`delta_dot = delta_c - delta`)를 쓴다 |
 
-`p.actuator.enable = false` 로 끄면 순수 Nomoto 가 된다.
+`p.with_actuator(enable=False)` 로 끄면 순수 Nomoto 가 된다.
 계단 응답 해석해 검증(C1)은 이 상태에서 수행한다.
 
 ⚠ 구동기 모델을 포함할지 여부는 `decisions.md` D-006 (OPEN) — 작업자 확인 필요.
@@ -203,9 +205,9 @@ T < 0 이므로 개루프 침로 불안정선이다. 1단계 대상이 아니다
 
 **확인됨**
 
-아래는 `simulateHeading` / `nomotoDerivative` 와 **동일한 알고리즘을 Python 으로 독립
-구현**해 얻은 결과다 (2026-08-07, δ = 5 deg, tEnd = 10T, h = T/500).
-작성 환경에 MATLAB/Octave 가 없어 이 방식으로 선검증했다.
+아래는 `scripts/run_step_response_check.py` 실행 결과다
+(2026-08-07, δ = 5 deg, tEnd = 10T, h = T/500).
+같은 항목이 `tests/test_sim.py` 에 pytest 로도 들어 있어 CI 가 매 푸시마다 확인한다.
 
 | | 항목 | 결과 |
 |---|---|---|
@@ -225,13 +227,17 @@ T < 0 이므로 개루프 침로 불안정선이다. 1단계 대상이 아니다
 그 외:
 
 - [x] K, T 가 Chislett & Strøm-Tejsen 선형 미계수의 정확한 선형화임을 재유도로 확인
+      → `tests/test_plant.py::test_mariner_k_t_rederived_from_hydrodynamic_derivatives`
+      가 CI 에서 매번 재계산해 대조한다. 문헌값을 옮겨 적기만 하면 오타를 못 잡으므로,
+      원 미계수에서 다시 유도해 일치를 확인하는 방식으로 HANDOFF 9장을 실행 가능하게 만들었다
+- [x] Otter M(6,6) = 40.49375 kg·m² 재계산 확인 → `::test_otter_yaw_inertia_recomputed_from_mss`
+- [x] 모든 파라미터 세트가 출처를 갖는지 CI 가 강제 → `::test_every_param_set_cites_a_source`
+- [x] 선수각 해석해 ψ(t) = K·δ·(t − T(1−e^(−t/T))) 와 일치 (상대오차 5.5e-15)
+- [x] RK4 4차 수렴 차수 확인
 - [x] 선형 근사의 타각별 유효 범위 정량화
 
 **미확인 / 열린 항목**
 
-- [ ] **MATLAB 에서 `run_step_response_check.m` 실제 실행** — 위 결과는 동일 알고리즘의
-      Python 재구현으로 얻은 것이며, MATLAB 코드 자체는 아직 한 번도 실행되지 않았다.
-      문법 오류나 함수 시그니처 불일치가 남아 있을 수 있다. 가장 먼저 할 일.
 - [ ] 대상 선박 확정 (D-004)
 - [ ] 구동기 모델 포함 여부 확정 (D-006)
 - [ ] `tanker` 세트의 L, U, 구동기 한계 출처 보완

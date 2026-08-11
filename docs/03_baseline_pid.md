@@ -2,7 +2,7 @@
 
 > **이 문서는 작업자(David)가 직접 채운다.**
 > HANDOFF.md 5장: 베이스라인 PID 게인 튜닝은 대행 금지 항목이다.
-> Claude Code 는 아래 골격과 튜닝 도구(`src/scripts/run_baseline_tuning.m`)만 준비했다.
+> Claude Code 는 아래 골격과 튜닝 도구(`scripts/run_baseline_tuning.py`)만 준비했다.
 
 ---
 
@@ -63,7 +63,7 @@ RL 결과를 비교할 기준선이 필요하다. 그런데 그 기준선을 자
 
 ## 5. 성능 지표
 
-`printMetrics` 출력을 그대로 붙인다.
+`run_baseline_tuning.py` 가 출력한 표를 그대로 붙인다.
 
 `[작업자 작성]`
 

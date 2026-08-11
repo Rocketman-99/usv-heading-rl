@@ -36,7 +36,7 @@
 
 ### 결과
 
-`printMetrics({m_baseline, m_rl}, {'baseline PID', 'RL gains'})` 출력을 붙인다.
+`metrics_table([m_baseline, m_rl], ['baseline PID', 'RL gains'])` 출력을 붙인다.
 
 `[결과 대기]`
 
@@ -87,7 +87,7 @@
 
 - [ ] 시간 응답 3단 플롯(침로 / 선수각속도 / 타각)을 항상 함께 확인했는가
 - [ ] 타각에 지속 진동이 없는가
-- [ ] 타각 포화 시간 비율(`satFrac`)이 허용 범위인가
+- [ ] 타각 포화 시간 비율(`sat_frac`)이 허용 범위인가
 - [ ] 타각 변화율이 구동기 한계에 계속 붙어 있지 않은가
 
 `[결과 대기]` — `figures/`

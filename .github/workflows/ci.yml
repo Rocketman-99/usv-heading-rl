@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: pytest (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: 의존성 설치
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: 테스트
+        run: pytest -v
+
+      # 스크립트가 실제로 끝까지 도는지 확인한다.
+      # 플랜트 검증(C1~C6)은 실패 시 종료코드 1 을 내므로 CI 가 막는다.
+      - name: 플랜트 검증 스크립트 (C1~C6)
+        run: python scripts/run_step_response_check.py
+
+      - name: 튜닝 스크립트 스모크 테스트
+        run: |
+          python scripts/run_baseline_tuning.py
+          python scripts/run_baseline_tuning.py --kp 3 --ki 0 --kd 200 --step 1
+
+      - name: 결과 그림 업로드
+        if: matrix.python-version == '3.12'
+        uses: actions/upload-artifact@v4
+        with:
+          name: figures
+          path: figures/*.png
+          if-no-files-found: warn

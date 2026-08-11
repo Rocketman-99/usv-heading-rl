@@ -9,15 +9,17 @@
 
 ## 시작하기
 
-```matlab
->> startup_project              % src/ 경로 등록
->> checkEnv                     % MATLAB 버전 / 툴박스 라이선스 확인
->> run_step_response_check      % Nomoto 플랜트 검증 (C1~C6)
->> run_baseline_tuning          % 베이스라인 PID 수동 튜닝 (게인은 직접 입력)
+```bash
+pip install -e ".[dev]"
+
+pytest                                          # 검증 (70개)
+python scripts/run_step_response_check.py       # 플랜트 계단 응답 확인 (C1~C6)
+python scripts/run_baseline_tuning.py           # 플랜트 특성 출력
+python scripts/run_baseline_tuning.py --kp 3 --ki 0 --kd 200 --step 10
 ```
 
-1단계 코드는 **기본 MATLAB 기능만** 사용한다. Simulink·RL Toolbox 불필요.
-GNU Octave 에서도 동작한다.
+1단계는 Python 으로 진행한다 (`docs/decisions.md` D-002b).
+MATLAB 구현은 `matlab/` 에 보류 상태로 남아 있으며, 2단계에서 재검토한다.
 
 ---
 
@@ -39,30 +41,38 @@ GNU Octave 에서도 동작한다.
 ## 구조
 
 ```
-src/
-  checkEnv.m                       환경 확인
-  plant/
-    nomotoParams.m                 파라미터 세트 (출처 명시)
-    nomotoDerivative.m             1차 Nomoto + 구동기 상태미분
-  sim/
-    simulateHeading.m              폐루프 시뮬레이션 (RK4)
-    ssa.m                          각도 (-pi, pi] 정규화
-  control/
-    pidHeading.m                   PID 침로 제어기 (게인은 외부 입력)
-  analysis/
-    headingMetrics.m               평가 지표 4종
-    plotHeadingResponse.m          침로/선수각속도/타각 3단 플롯
-    printMetrics.m                 markdown 비교표 생성
-  scripts/
-    run_step_response_check.m      플랜트 검증
-    run_baseline_tuning.m          수동 튜닝 도구
+src/usv_heading/
+  plant.py         1차 Nomoto 모델 + 문헌 출처가 확인된 파라미터 세트
+  sim.py           RK4 폐루프 시뮬레이션, 각도 정규화(ssa)
+  control.py       PID 침로 제어기 (게인은 외부 주입)
+  metrics.py       평가 지표 4종 + markdown 비교표
+  plotting.py      침로/선수각속도/타각 3단 플롯
+scripts/
+  run_step_response_check.py   플랜트 검증 C1~C6
+  run_baseline_tuning.py       수동 튜닝 도구
+tests/                         pytest 70개. CI 가 매 푸시마다 실행
+matlab/                        MATLAB 구현 (보류 — matlab/README.md 참조)
 ```
+
+---
+
+## 검증
+
+문헌 계수는 **옮겨 적기만 하지 않는다.** 원 유체력 미계수에서 다시 유도해
+일치하는지를 CI 가 매번 확인한다 — HANDOFF 9장("출처 없는 계수 사용 금지")에
+대한 실행 가능한 대응이다.
+
+- `test_mariner_k_t_rederived_from_hydrodynamic_derivatives` — K, T 재유도
+- `test_otter_yaw_inertia_recomputed_from_mss` — M(6,6) 재계산
+- `test_every_param_set_cites_a_source` — 출처 없는 세트 추가 차단
+
+플랜트 자체는 해석해와 대조한다 (C1 상대오차 4.9e-14).
 
 ---
 
 ## 진행 단계
 
-- [x] **1단계 준비** — 저장소 구조, Nomoto 모델, PID, 지표, 검증 스크립트
+- [x] **1단계 준비** — 플랜트, PID, 지표, 검증, CI
 - [ ] **1단계** — 베이스라인 PID 수동 튜닝 → RL 게인 최적화 → 비교표
 - [ ] **2단계** — 수평면 3자유도 조종운동모델로 플랜트 교체
 - [ ] **3단계** — 파랑·조류 외란 하 게인 강건성 비교

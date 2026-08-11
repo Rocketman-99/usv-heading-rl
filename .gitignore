@@ -27,11 +27,18 @@ logs/
 results/**/raw/
 *.csv.gz
 
-# --- Python 대안 검토용 (사용 시) ---
+# --- Python ---
 __pycache__/
 *.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
 .venv/
 venv/
+.pytest_cache/
+.coverage
+htmlcov/
 
 # --- OS / 에디터 ---
 .DS_Store
