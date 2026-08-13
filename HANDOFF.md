@@ -124,6 +124,8 @@
 usv-heading-rl/
   README.md
   HANDOFF.md              (이 문서)
+  pyproject.toml          패키지 정의, pytest 설정
+  requirements.txt
   docs/
     01_requirements.md    요구사항 및 범위 정의
     02_plant_model.md     플랜트 모델과 파라미터 출처
@@ -131,12 +133,19 @@ usv-heading-rl/
     04_rl_design.md       보상 함수, 알고리즘, 하이퍼파라미터
     05_validation.md      검증 조건과 결과
     decisions.md          설계 결정 로그
-    journal.md            실패·시행착오 기록
-  src/
+    journal.md            작업 일지 — 작업자 본인 기록
+    worklog.md            작업 로그 — AI에 위임한 작업 (D-009)
+  src/usv_heading/        플랜트, 시뮬레이터, PID, 평가 지표
+  scripts/                검증·튜닝 실행 스크립트
+  tests/                  pytest. CI가 매 푸시마다 실행
+  matlab/                 MATLAB 구현 (보류 — D-002b)
+  .github/workflows/      CI
   results/                그래프, 요약 지표 (대용량 원본 제외)
   figures/
   .gitignore
 ```
+
+1단계는 Python으로 진행한다 (D-002b). 2단계 환경은 1단계 완료 후 다시 정한다.
 
 ### decisions.md 형식
 
@@ -155,14 +164,20 @@ usv-heading-rl/
 
 `AI 활용` 항목을 반드시 포함한다. 어디까지 위임하고 어디부터 직접 판단했는지가 기록으로 남아야 한다.
 
-### journal.md 형식
+### journal.md / worklog.md 형식
 
-날짜와 한두 줄이면 충분하다. 실패한 시도일수록 반드시 남긴다.
+두 파일 모두 날짜와 한두 줄이면 충분하다. 실패한 시도일수록 반드시 남긴다.
 
 ```
 2026-08-14  보상에 러더 사용량 항을 넣지 않았더니 타각이 지속 진동. 가중치 추가 검토 필요
 2026-08-16  학습 조건 밖 초기 침로(180도)에서 성능 붕괴. 초기조건 랜덤화 추가
 ```
+
+**두 파일은 작성자로 나눈다.** journal.md는 작업자 본인이 쓰고, AI에 위임한 작업의
+기록은 worklog.md에 남긴다. journal.md에 AI가 쓴 내용을 넣지 않는다.
+
+이 구분은 형식상의 정리가 아니다. 11장의 질문 "이 프로젝트에서 AI를 어디까지
+사용했는가?"에 두 파일의 차이가 그대로 답이 된다. 근거는 D-009 참조.
 
 ### 커밋 메시지
 
@@ -252,3 +267,6 @@ usv-heading-rl/
 - 가장 고생한 부분은 무엇인가?
 
 마지막 두 질문의 답은 `decisions.md`와 `journal.md`에서 나온다. 그래서 이 두 파일이 코드만큼 중요하다.
+
+- **"가장 고생한 부분은 무엇인가?"** → `journal.md`
+- **"AI를 어디까지 사용했는가?"** → `decisions.md`의 `AI 활용` 항목, 그리고 `journal.md`와 `worklog.md`의 경계
