@@ -34,7 +34,8 @@ MATLAB 구현은 `matlab/` 에 보류 상태로 남아 있으며, 2단계에서 
 | [docs/04_rl_design.md](docs/04_rl_design.md) | 보상 함수, 알고리즘, 하이퍼파라미터 |
 | [docs/05_validation.md](docs/05_validation.md) | 검증 조건과 결과 |
 | [docs/decisions.md](docs/decisions.md) | 설계 결정 로그 |
-| [docs/journal.md](docs/journal.md) | 실패·시행착오 기록 |
+| [docs/journal.md](docs/journal.md) | 작업 일지 — **작업자(David) 본인 기록** |
+| [docs/worklog.md](docs/worklog.md) | 작업 로그 — AI 에 위임한 작업의 진행과 막힌 지점 |
 
 ---
 
@@ -90,3 +91,7 @@ matlab/                        MATLAB 구현 (보류 — matlab/README.md 참조
 - 결과의 채택 여부 판단
 
 `docs/decisions.md` 의 `AI 활용` 항목에 어디까지 위임했는지가 건별로 기록된다.
+
+기록도 둘로 나뉜다 — `journal.md` 는 작업자 본인의 일지이고,
+`worklog.md` 는 AI 에 위임한 작업의 로그다. 두 파일의 차이가 곧
+"AI 를 어디까지 썼는가"에 대한 답이다.

@@ -50,7 +50,7 @@ class SimOptions:
     t_end = 10|T| 인 이유: 계단 응답의 지수 잔차가 e^(-10) = 4.5e-5 로 떨어져
     "정상상태 r = K*delta" 를 1e-3 허용오차로 판정할 수 있다.
     6|T| 로 두면 잔차가 e^(-6) = 2.5e-3 라 판정이 실패한다 — 구현 오류가 아니라
-    시뮬레이션이 짧은 것뿐이다. docs/journal.md 2026-08-07 항목 참조.
+    시뮬레이션이 짧은 것뿐이다. docs/worklog.md 2026-08-07 항목 참조.
     """
 
     t_end: Optional[float] = None
