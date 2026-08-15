@@ -62,9 +62,16 @@ r(t) = K · δ₀ · (1 − e^(−t/T))
 - K, T₁, T₂, T₃ — Fossen, *MSS (Marine Systems Simulator)*, `mssExamples/exNomoto.m`,
   <https://github.com/cybergalactic/MSS> (2026-08-07 확인)
 - 원 출처 — M. S. Chislett and J. Strøm-Tejsen (1965),
-  *"Planar Motion Mechanism Tests and Full-Scale Steering and Maneuvering Predictions
-  for a Mariner Class Vessel"*, Report Hy-5,
-  Hydro- and Aerodynamics Laboratory, Lyngby, Denmark
+  *"Planar Motion Mechanism Tests and Full-Scale Steering and Manoeuvring Predictions
+  for a Mariner Class Vessel"*, **International Shipbuilding Progress 12(129), 201–224**,
+  <https://doi.org/10.3233/ISP-1965-1212902>
+  (동 내용의 기관 보고서는 Report **Hy-6**, Hydro- and Aerodynamics Laboratory, Lyngby, Denmark)
+
+  > ⚠ **인용 오류 정정 (2026-08-15)**: MSS `mariner.m` 헤더는 이 논문을 "Technical Report Hy-5"
+  > 라고 적고 있고, 본 저장소도 그대로 옮겨 적었었다. 확인 결과 **Hy-5 는 Abkowitz (1964),
+  > *Lectures on Ship Hydrodynamics — Steering and Manoeuvrability*** 의 번호다
+  > ([TRID Hy-5](https://trid.trb.org/View/159100)).
+  > 보고서 번호는 출처마다 엇갈리므로 **저널판(ISP 12(129))으로 인용하는 것이 안전하다.**
 - L, U₀, 구동기 한계 — MSS `CRAFT/SHIP/models/mariner.m`
   (타각 한계 40 deg 는 IMO 의 35 deg rudder execute 규정을 만족시키기 위한 값이라고 동 파일에 명시)
 
@@ -82,6 +89,19 @@ Y_v = −1160e-5   N_v = −264e-5
 Y_r = −499e-5    N_r = −166e-5
 Y_δ =  278e-5    N_δ = −139e-5
 ```
+
+**⚠ Y_r, N_r 은 강체 구심항을 이미 포함한 "총(total)" 미계수다 (2026-08-15 확인)**
+
+선형 조종방정식을 교과서식으로 쓰면 sway 식에 강체 구심항 `m·U·r` 이 나타나고,
+그 결과 미계수가 `Y_r − m·U`, `N_r − m·x_G·U` 로 바뀐다. **이 계수 세트에는 그렇게 하면 안 된다.**
+
+- MSS `mariner.m` 의 운동방정식에 `m*u*r` 형태의 항이 존재하지 않는다.
+  `Y = Yv*v + Yr*r + ...` 로 Y_r 이 그대로 쓰인다
+  (`Yru*r*u` 는 u 가 기준속력 대비 섭동이라 정격속도에서 0 이 되는 속도보정항이며 별개다).
+- 구심항을 명시적으로 더하면 특성방정식 상수항이 `+6.08e-6 → −1.71e-5` 로 부호가 뒤집혀
+  **침로 불안정**(극점 +0.417)이 되고, 문헌값 T₁ = 118 s, T₂ = 7.8 s (둘 다 양수)와 모순된다.
+
+즉 아래 재유도는 구심항을 따로 더하지 않는 것이 옳다.
 
 선형 sway–yaw 방정식에서 r(s)/δ(s) 를 구한 결과:
 
