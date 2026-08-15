@@ -28,6 +28,7 @@ MATLAB 구현은 `matlab/` 에 보류 상태로 남아 있으며, 2단계에서 
 | 문서 | 내용 |
 |---|---|
 | [HANDOFF.md](HANDOFF.md) | 프로젝트 인수인계. **가장 먼저 읽는다** |
+| [docs/00_references.md](docs/00_references.md) | 참고자료 색인 — 1차 문헌, Fossen 교재 슬라이드, 코드 저장소 |
 | [docs/01_requirements.md](docs/01_requirements.md) | 요구사항 및 범위 정의 |
 | [docs/02_plant_model.md](docs/02_plant_model.md) | 플랜트 모델과 파라미터 출처 |
 | [docs/03_baseline_pid.md](docs/03_baseline_pid.md) | 베이스라인 튜닝 과정과 결과 |
